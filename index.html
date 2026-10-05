@@ -46,6 +46,10 @@ select:focus,input:focus{outline:none;border-color:var(--acc)}
 .price .cr{font-weight:700;color:var(--acc);font-size:1rem}
 .price .usd{font-size:.74rem;color:var(--tx2)}
 .price .calc{font-size:.8rem;color:var(--acc2);margin-top:2px}
+.price .compare{font-size:.74rem;color:var(--tx2);margin-top:4px;padding-top:4px;border-top:1px dashed #2a2f38}
+.price .compare b{color:var(--tx)}
+.price .compare .dr{color:var(--acc);margin-left:4px;font-weight:600}
+.price .compare .hint{color:#5d6571;margin-left:2px}
 .var{font-size:.78rem;color:var(--tx2);margin-top:2px}
 .meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .mtag{font-size:.7rem;border-radius:5px;padding:2px 8px;background:var(--card2);border:1px solid var(--line);color:var(--tx2)}
@@ -250,6 +254,11 @@ function renderRec(){
   </div>`;
 }
 
+function compareHTML(e){
+  if(!e.fal||e.fal<=0)return "";
+  const dr=e.dr?`<span class="dr">-${e.dr}%</span>`:"";
+  return `<div class="compare">vs. Hersteller-Liste: <b>$${fmt(e.fal)}</b>${dr} <span class="hint">(offiziell / Fal.ai)</span></div>`;
+}
 function cardHTML(e){
   const perSec=e.unit==="per second";
   const unitTxt=perSec?" / s":(e.unit&&!["per image","per video",""].includes(e.unit)?" / "+e.unit.replace("per ",""):"");
@@ -258,7 +267,7 @@ function cardHTML(e){
   return `<div class="card">
     <div class="top">
       <div><span class="name">${ICON[e.media]} ${esc(e.name)}</span><span class="badge">${esc(e.prov)}</span></div>
-      <div class="price"><div class="cr">${fmt(e.cr)} Cr${unitTxt}</div><div class="usd">≈ $${fmt(e.usd)}${perSec?" / s":""}${!perSec&&e.usd!==e.usdTyp?` · typisch $${fmt(e.usdTyp)}`:""}</div>${c!=null?`<div class="calc">für ${fmt(qty())} ${qtyUnitInfo(e).label}: ${fmt(c)} Cr ≈ $${fmt(c*DATA.meta.rate)}</div>`:""}</div>
+      <div class="price"><div class="cr">${fmt(e.cr)} Cr${unitTxt}</div><div class="usd">≈ $${fmt(e.usd)}${perSec?" / s":""}${!perSec&&e.usd!==e.usdTyp?` · typisch $${fmt(e.usdTyp)}`:""}</div>${c!=null?`<div class="calc">für ${fmt(qty())} ${qtyUnitInfo(e).label}: ${fmt(c)} Cr ≈ $${fmt(c*DATA.meta.rate)}</div>`:""}${compareHTML(e)}</div>
     </div>
     ${e.var?`<div class="var">${esc(e.var)}</div>`:""}
     <div class="meta-row"><span class="mtag">Qualität: ${QDE[e.q]}</span><span class="mtag">${SDE[e.sp]}</span>${tags}</div>
