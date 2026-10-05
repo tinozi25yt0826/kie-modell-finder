@@ -172,9 +172,14 @@ function qty(){const v=parseFloat($("calc-qty").value);return isFinite(v)&&v>0?v
 function qtyUnitInfo(e){
   if(e.unit==="per second")return{label:"Sekunden",per:"pro Sekunde",div:1};
   if(e.unit.includes("1000 characters"))return{label:"Zeichen",per:"pro 1000 Zeichen",div:1000};
-  if(e.media==="Bild")return{label:"Bilder",per:"pro Bild",div:1};
-  if(e.media==="Musik")return{label:"Generierungen",per:"pro Song",div:1};
-  return{label:"Videos",per:"pro Video",div:1};
+  if(e.unit.includes("million tokens"))return{label:"Mio. Tokens",per:"pro Million Tokens",div:1};
+  if(e.unit==="per image")return{label:"Bilder",per:"pro Bild",div:1};
+  if(e.unit==="per request"&&e.media==="Musik")return{label:"Songs",per:"pro Song",div:1};
+  if(e.unit==="per request"&&e.media==="Bild")return{label:"Bilder",per:"pro Bild",div:1};
+  if(e.unit==="per request")return{label:"Aufrufe",per:"pro Aufruf",div:1};
+  if(e.unit==="per upscale")return{label:"Upscales",per:"pro Upscale",div:1};
+  if(e.unit==="per second"&&e.media==="Musik")return{label:"Sekunden",per:"pro Sekunde",div:1};
+  return{label:"Generierungen",per:"pro Generierung",div:1};
 }
 function calcCr(e){
   const q=qty();if(!q)return null;
