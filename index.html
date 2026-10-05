@@ -256,8 +256,20 @@ function renderRec(){
 
 function compareHTML(e){
   if(!e.fal||e.fal<=0)return "";
-  const dr=e.dr?`<span class="dr">-${e.dr}%</span>`:"";
-  return `<div class="compare">vs. Hersteller-Liste: <b>$${fmt(e.fal)}</b>${dr} <span class="hint">(offiziell / Fal.ai)</span></div>`;
+  const q=qty();
+  const u=qtyUnitInfo(e);
+  let factor=q, unitShort=u.label;
+  if(e.unit==="per second"){factor=q;}
+  else if(u.div>1){factor=q/u.div; unitShort=`${u.div} ${u.label}`;}
+  const falTotal=e.fal*factor;
+  const c=calcCr(e);
+  if(c==null){
+    // Kein Rechner-Wert: zeige Pro-Einheit-Vergleich
+    return `<div class="compare">vs. Hersteller pro ${unitShort}: <b>$${fmt(e.fal)}</b></div>`;
+  }
+  const kieTotal=c*DATA.meta.rate;
+  const dr=Math.round((1-kieTotal/falTotal)*100);
+  return `<div class="compare">vs. Hersteller für ${fmt(q)} ${u.label}: <b>$${fmt(falTotal)}</b> <span class="dr">-${dr}%</span></div>`;
 }
 function cardHTML(e){
   const perSec=e.unit==="per second";
