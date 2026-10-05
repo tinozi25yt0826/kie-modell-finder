@@ -50,6 +50,9 @@ select:focus,input:focus{outline:none;border-color:var(--acc)}
 .price .compare b{color:var(--tx)}
 .price .compare .dr{color:var(--acc);margin-left:4px;font-weight:600}
 .price .compare .hint{color:#5d6571;margin-left:2px}
+.price .compare .more{color:var(--acc2);cursor:pointer;text-decoration:underline;margin-left:6px;font-weight:500}
+.price .compare .more:hover{color:var(--acc)}
+.price .compare .expand{display:block;margin-top:2px;color:var(--tx)}
 .var{font-size:.78rem;color:var(--tx2);margin-top:2px}
 .meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .mtag{font-size:.7rem;border-radius:5px;padding:2px 8px;background:var(--card2);border:1px solid var(--line);color:var(--tx2)}
@@ -256,7 +259,13 @@ function renderRec(){
 
 function compareHTML(e){
   if(!e.fal||e.fal<=0)return "";
-  return `<div class="compare">vs. Hersteller pro ${e.unit.replace("per ","")}: <b>$${fmt(e.fal)}</b></div>`;
+  const q=qty();
+  if(!q)return `<div class="compare">vs. Hersteller pro ${e.unit.replace("per ","")}: <b>$${fmt(e.fal)}</b></div>`;
+  const u=qtyUnitInfo(e);
+  let factor=q, unitLabel=u.label;
+  if(u.div>1){factor=q/u.div; unitLabel=`${u.div} ${u.label}`;}
+  const falTotal=e.fal*factor;
+  return `<div class="compare">vs. Hersteller pro ${e.unit.replace("per ","")}: <b>$${fmt(e.fal)}</b> <a class="more" data-fal="${falTotal}" data-unit="${u.label}">für ${fmt(q)} ${u.label} anzeigen</a></div>`;
 }
 function cardHTML(e){
   const perSec=e.unit==="per second";
@@ -283,6 +292,17 @@ function renderList(){
   }
   $("countline").innerHTML=`<b>${list.length}</b> von ${DATA.models.length} Modellen${uc?` · Use-Case: ${uc.icon} ${esc(uc.label)}`:""}`;
   $("list").innerHTML=list.length?list.map(cardHTML).join(""):`<div class="empty">Nichts gefunden — Filter lockern.</div>`;
+  $("list").querySelectorAll(".compare .more").forEach(a=>{
+    a.addEventListener("click",e=>{
+      e.preventDefault();
+      const fal=parseFloat(a.dataset.fal);
+      const unit=a.dataset.unit;
+      const exp=document.createElement("span");
+      exp.className="expand";
+      exp.textContent=` → ${fmt(fal)} $ für ${unit}`;
+      a.replaceWith(exp);
+    });
+  });
   renderRec();
 }
 
