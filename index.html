@@ -295,6 +295,7 @@ async function refreshLive(){
     const r=await fetch("https://api.kie.ai/client/v1/model-pricing/page",{
       method:"POST",headers:{"Content-Type":"application/json","Origin":window.location.origin},
       body:JSON.stringify({pageNum:1,pageSize:100})
+    });
     const j=await r.json();
     if(!j||j.code!==200||!j.data||!j.data.records)throw new Error("API-Antwort unerwartet");
     let recs=j.data.records||[];
@@ -303,8 +304,8 @@ async function refreshLive(){
       const r2=await fetch("https://api.kie.ai/client/v1/model-pricing/page",{
         method:"POST",headers:{"Content-Type":"application/json","Origin":window.location.origin},
         body:JSON.stringify({pageNum:p,pageSize:100})
-
-    if(j2&&j2.code===200&&j2.data&&j2.data.records)recs=recs.concat(j2.data.records);
+      });
+      const j2=await r2.json();
       if(j2&&j2.code===200&&j2.data&&j2.data.records)recs=recs.concat(j2.data.records);
     }
     if(recs.length<50)throw new Error("zu wenige Datensaetze");
